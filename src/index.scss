@@ -2,7 +2,7 @@ html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-  }
+}
 
 .card {
   background-color: #222222;
@@ -47,4 +47,10 @@ html, body {
   color: #595959;
 }
 
-  
+.check-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 15px;
+  width: 20px;
+}

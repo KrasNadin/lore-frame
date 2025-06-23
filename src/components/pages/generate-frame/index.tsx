@@ -1,16 +1,42 @@
 import { Button, Card, Col, Input, Row, Select, Space, Steps } from 'antd';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useRecoilState, useRecoilValue } from 'recoil';
+
+import { checkApiKey } from '@/api/gpt-responses';
+import { renderCheckStatus } from '@/components/widgets/check-status';
+import { gptState, locationsState, useGptActions } from '@/store/atoms';
+import { DefaultInfo } from '@/store/types';
 
 export default function GenerateFrame() {
 	const navigate = useNavigate();
+	const [gptKey] = useRecoilState(gptState);
+	const { setGptKey } = useGptActions();
+	const locations = useRecoilValue(locationsState);
 
 	const [current, setCurrent] = useState(0);
+	const [userGptKey, setUserGptKey] = useState(gptKey);
+	const [checkStatus, setCheckStatus] = useState<string>('waiting');
 
-	const onChange = (value: number) => {
-		console.log('onChange:', value);
-		setCurrent(value);
+	const handleSetUserGptKey = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const newKey = e.target.value;
+		setUserGptKey(newKey);
 	};
+
+	const handleCheckGptKey = useCallback(
+		async (key: string) => {
+			setCheckStatus('checking');
+			const isChecked = await checkApiKey(key);
+			if (isChecked) {
+				setGptKey(key);
+				setCheckStatus('success');
+			} else {
+				setCheckStatus('error');
+				console.warn('Invalid API key. Update cancelled.');
+			}
+		},
+		[setGptKey]
+	);
 
 	return (
 		<>
@@ -21,7 +47,9 @@ export default function GenerateFrame() {
 							direction='vertical'
 							current={current}
 							style={{ maxWidth: '500px' }}
-							onChange={onChange}
+							onChange={(value: number) => {
+								setCurrent(value);
+							}}
 							items={[
 								{
 									title: 'Проверь свое подключение к Chat GPT',
@@ -35,8 +63,11 @@ export default function GenerateFrame() {
 												и скопируй API ключ.
 											</p>
 											<Space.Compact style={{ width: '100%' }}>
-												<Input />
-												<Button type='primary'>Проверить</Button>
+												<Input value={userGptKey} onChange={handleSetUserGptKey} />
+												<Button type='primary' onClick={handleCheckGptKey} disabled={userGptKey.length === 0}>
+													Проверить
+												</Button>
+												<div className='check-state'>{renderCheckStatus(checkStatus)}</div>
 											</Space.Compact>
 										</>
 									),
@@ -49,19 +80,10 @@ export default function GenerateFrame() {
 												showSearch
 												style={{ width: '100%' }}
 												optionFilterProp='label'
-												filterSort={(optionA, optionB) =>
-													(optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-												}
-												options={[
-													{
-														value: '1',
-														label: 'Темный лес',
-													},
-													{
-														value: '1',
-														label: 'Лагерь разбойников',
-													},
-												]}
+												options={locations.map((loc: DefaultInfo) => ({
+													label: loc.title,
+													value: loc.id,
+												}))}
 											/>
 											<p>
 												Не нашел нужную сцену?&nbsp;

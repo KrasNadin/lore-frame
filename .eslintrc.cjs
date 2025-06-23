@@ -18,8 +18,8 @@ module.exports = {
       {
         "ignoreRefs": false,
         "allowArrowFunctions": true,
-        "allowFunctions": true,
-        "allowBind": true,
+        "allowFunctions": false,
+        "allowBind": false,
         "ignoreDOMComponents": true,
       },
     ],

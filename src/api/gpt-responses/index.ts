@@ -29,5 +29,6 @@ export async function checkApiKey(apiKey: string): Promise<boolean> {
 			console.warn('API-ключ недействителен или запрещен.');
 			return false;
 		}
+		return false;
 	}
 }
