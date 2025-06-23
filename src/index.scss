@@ -1,0 +1,50 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+
+.card {
+  background-color: #222222;
+  border-radius: 12px;
+  color: #E9E9E9;
+}
+
+.mainIcon {
+    font-size: 25px;
+    color: black;
+  }
+
+.cardIcon{
+  font-size: 20px;
+  padding: 5px;
+  color: #E9E9E9;
+}
+
+.actor-uploader {
+  color: #d9d9d9;
+}
+
+.actor-layout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.actor-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 100px;
+}
+
+.info-alert {
+  flex: 1;
+  align-self: stretch;
+  background-color: #2B2B2B;
+  border: 1px solid #d9d9d9;
+  color: #595959;
+}
+
+  
