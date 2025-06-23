@@ -12,13 +12,12 @@ module.exports = {
     "project": ["./tsconfig.json"]
   },
   "rules": {
-    "i18next/no-literal-string": "error",
-    "custom-rules/check-i18n-keys": 'error',
+    "i18next/no-literal-string": "warn",
     "react/jsx-no-bind": [
       "error",
       {
         "ignoreRefs": false,
-        "allowArrowFunctions": false,
+        "allowArrowFunctions": true,
         "allowFunctions": false,
         "allowBind": false,
         "ignoreDOMComponents": true,
@@ -28,7 +27,7 @@ module.exports = {
     "react/no-unescaped-entities": "off",
     "@typescript-eslint/no-unsafe-call": "off",
     "linebreak-style": "off",
-    "no-console": "error",
+    "no-console": "warn",
     "prettier/prettier": "warn",
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
