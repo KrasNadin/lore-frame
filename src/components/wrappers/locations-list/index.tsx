@@ -11,7 +11,6 @@ type Props = {
 
 export default function LocationsList({ locations }: Props) {
 	const [editStates, setEditStates] = useState<Record<string, { editing: boolean; value: string }>>({});
-	// const [ isEditing, setIsEditing ] = useState(false);
 	const { updateLocation, deleteLocation } = useLocationActions();
 
 	useEffect(() => {

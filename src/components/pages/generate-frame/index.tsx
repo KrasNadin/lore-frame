@@ -5,7 +5,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 
 import { checkApiKey } from '@/api/gpt-responses';
 import { renderCheckStatus } from '@/components/widgets/check-status';
-import { gptState, locationsState, useGptActions } from '@/store/atoms';
+import { actorsState, gptState, locationsState, useGptActions } from '@/store/atoms';
 import { DefaultInfo } from '@/store/types';
 
 export default function GenerateFrame() {
@@ -13,14 +13,14 @@ export default function GenerateFrame() {
 	const [gptKey] = useRecoilState(gptState);
 	const { setGptKey } = useGptActions();
 	const locations = useRecoilValue(locationsState);
+	const actors = useRecoilValue(actorsState);
 
 	const [current, setCurrent] = useState(0);
 	const [userGptKey, setUserGptKey] = useState(gptKey);
 	const [checkStatus, setCheckStatus] = useState<string>('waiting');
 
-	const handleSetUserGptKey = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const newKey = e.target.value;
-		setUserGptKey(newKey);
+	const handleSetUserGptKey = (userGptKey: string) => {
+		setUserGptKey(userGptKey);
 	};
 
 	const handleCheckGptKey = useCallback(
@@ -63,8 +63,18 @@ export default function GenerateFrame() {
 												и скопируй API ключ.
 											</p>
 											<Space.Compact style={{ width: '100%' }}>
-												<Input value={userGptKey} onChange={handleSetUserGptKey} />
-												<Button type='primary' onClick={handleCheckGptKey} disabled={userGptKey.length === 0}>
+												<Input
+													value={userGptKey}
+													onChange={(e) => {
+														handleSetUserGptKey(e.target.value);
+													}}
+												/>
+												<Button
+													type='primary'
+													onClick={() => {
+														handleCheckGptKey(userGptKey);
+													}}
+													disabled={userGptKey.length === 0}>
 													Проверить
 												</Button>
 												<div className='check-state'>{renderCheckStatus(checkStatus)}</div>
@@ -103,16 +113,10 @@ export default function GenerateFrame() {
 												mode='tags'
 												style={{ width: '100%' }}
 												tokenSeparators={[',']}
-												options={[
-													{
-														value: '1',
-														label: 'Гарри Смит',
-													},
-													{
-														value: '1',
-														label: 'Пол Уокер',
-													},
-												]}
+												options={actors.map((actor: DefaultInfo) => ({
+													key: actor.id,
+													value: actor.title,
+												}))}
 											/>
 											<p>
 												Ты можешь добавить новых актеров&nbsp;

@@ -1,37 +1,24 @@
 import { CloseOutlined } from '@ant-design/icons';
 import { Button, Flex, Space } from 'antd';
-import { useState } from 'react';
+import { useRecoilValue } from 'recoil';
 
-type Actor = {
-	key: string;
-	name: string;
-	description: string;
-};
+import { actorsState, useActorsActions } from '@/store/atoms';
+import { DefaultInfo } from '@/store/types';
 
 export default function ActorsList() {
-	const [actors, setActors] = useState<Actor[]>([
-		{
-			key: '1',
-			name: 'Рагнар',
-			description: '...',
-		},
-		{
-			key: '2',
-			name: 'Поль де Голь',
-			description: '...',
-		},
-	]);
+	const actors = useRecoilValue(actorsState);
+	const { deleteActors } = useActorsActions();
 
-	const removeActor = (key: string) => {
-		setActors((prev) => prev.filter((actor) => actor.key !== key));
+	const removeActor = (id: string) => {
+		deleteActors(id);
 	};
 
 	return (
 		<Space direction='vertical' style={{ width: '100%' }}>
 			{actors.length === 0 && <div>Пока ни одного актёра.</div>}
-			{actors.map((actor) => (
+			{actors.map((actor: DefaultInfo) => (
 				<Flex
-					key={actor.key}
+					key={actor.id}
 					justify='space-between'
 					align='center'
 					style={{
@@ -39,8 +26,8 @@ export default function ActorsList() {
 						background: 'black',
 						borderRadius: 4,
 					}}>
-					<div>{actor.name}</div>
-					<Button type='text' size='small' icon={<CloseOutlined />} onClick={() => removeActor(actor.key)} />
+					<div>{actor.title}</div>
+					<Button type='text' size='small' icon={<CloseOutlined />} onClick={() => removeActor(actor.id)} />
 				</Flex>
 			))}
 		</Space>
