@@ -55,3 +55,26 @@ export const useLocationActions = () => {
 
 	return { addLocation, deleteLocation, updateLocation };
 };
+
+// {Actors}
+export const actorsState = atom<DefaultInfo[]>({
+	key: 'actors',
+	default: [],
+	effects: [localStorageEffect('actors')],
+});
+
+export const useActorsActions = () => {
+	const setActors = useSetRecoilState(actorsState);
+
+	const addActors = ({ id, title, description }: DefaultInfo) => {
+		setActors((prevActors) => [...prevActors, { id, title, description }]);
+	};
+
+	const deleteActors = (id: string) => {
+		setActors((prevActors) => {
+			return prevActors.filter((actor) => actor.id !== id);
+		});
+	};
+
+	return { addActors, deleteActors };
+};
