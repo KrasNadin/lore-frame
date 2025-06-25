@@ -1,9 +1,10 @@
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import { CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Button, Card, Input, Space, Divider, Flex, Alert } from 'antd';
 import { useState } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import SaveLocationModal from '@/components/widgets/save-location-modal';
+import { VoiceInput } from '@/components/widgets/voice-input';
 import LocationsList from '@/components/wrappers/locations-list';
 import { locationsState } from '@/store/atoms';
 
@@ -12,6 +13,10 @@ export default function Locations() {
 
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [description, setDescription] = useState('');
+
+	const addVoiceText = (transcript: string) => {
+		setDescription(description + transcript);
+	};
 
 	return (
 		<>
@@ -56,6 +61,16 @@ export default function Locations() {
 							placeholder='Напиши короткое описание локации'
 							value={description}
 							onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDescription(e.target.value)}
+							suffix={
+								<>
+									<CloseOutlined
+										onClick={() => {
+											setDescription('');
+										}}
+									/>
+									<VoiceInput addVoiceText={addVoiceText} iconSize={24} />
+								</>
+							}
 						/>
 						<Button type='primary' style={{ height: 48 }} onClick={() => setIsModalOpen(true)} disabled={description === ''}>
 							Создать сцену

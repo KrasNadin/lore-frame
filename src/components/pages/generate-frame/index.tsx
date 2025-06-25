@@ -1,10 +1,14 @@
-import { Button, Card, Col, Input, Row, Select, Space, Steps } from 'antd';
+import { CloseOutlined } from '@ant-design/icons';
+import { Alert, Button, Card, Col, Input, notification, Row, Select, Space, Steps } from 'antd';
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
-import { checkApiKey } from '@/api/gpt-responses';
+import { checkApiKey, getImageGenerateResponse } from '@/api/gpt-responses';
 import { renderCheckStatus } from '@/components/widgets/check-status';
+import ResultModal from '@/components/widgets/result-modal';
+import { VoiceInput } from '@/components/widgets/voice-input';
+import { useStepState } from '@/hooks/stape-state';
 import { actorsState, gptState, locationsState, useGptActions } from '@/store/atoms';
 import { DefaultInfo } from '@/store/types';
 
@@ -16,12 +20,32 @@ export default function GenerateFrame() {
 	const actors = useRecoilValue(actorsState);
 
 	const [current, setCurrent] = useState(0);
+	const [text, setText] = useState<string>('');
 	const [userGptKey, setUserGptKey] = useState(gptKey);
 	const [checkStatus, setCheckStatus] = useState<string>('waiting');
+	const [isModalOpen, setModalOpen] = useState(false);
+	const [api, contextHolder] = notification.useNotification();
+	const [imageUrl, setImageUrl] = useState<string>('');
 
-	const handleSetUserGptKey = (userGptKey: string) => {
-		setUserGptKey(userGptKey);
+	const openNotification = (message: string) => {
+		api.info({
+			message: message,
+			placement: 'bottomRight',
+		});
 	};
+
+	const {
+		selectedLocationId,
+		setSelectedLocationId,
+		locationDescription,
+		setLocationDescription,
+		setSelectedActorsId,
+		selectedActors,
+		setSelectedActors,
+		action,
+		isGenerating,
+		setIsGenerating,
+	} = useStepState();
 
 	const handleCheckGptKey = useCallback(
 		async (key: string) => {
@@ -38,8 +62,48 @@ export default function GenerateFrame() {
 		[setGptKey]
 	);
 
+	const handleSelectLocation = (value: string) => {
+		setSelectedLocationId(value);
+		const selectedLocationDescription = locations.find((loc) => loc.id === value)?.description;
+		if (selectedLocationDescription) {
+			setLocationDescription(selectedLocationDescription);
+		}
+	};
+
+	const handleSelectActors = (value: string[]) => {
+		setSelectedActorsId(value);
+		const selectedActorsList = actors.filter((actor) => value.includes(actor.id)).filter(Boolean);
+		setSelectedActors(selectedActorsList);
+	};
+
+	const handleImageGenerate = async () => {
+		setModalOpen(false);
+		setIsGenerating(true);
+		const generatedImage: string = await getImageGenerateResponse(gptKey, locationDescription, selectedActors, action);
+		console.log('Результат генерации:', generatedImage);
+		setImageUrl(generatedImage);
+		if (generatedImage.length === 0) {
+			openNotification('DALL·E отказалась рисовать это. Наверное, слишком дерзко. Перепиши мягче. ');
+		}
+		setModalOpen(true);
+		setIsGenerating(false);
+	};
+
+	const addVoiceText = (transcript: string) => {
+		setText((prev) => prev + transcript);
+	};
+
 	return (
 		<>
+			{contextHolder}
+			{isModalOpen && (
+				<ResultModal
+					isModalOpen={isModalOpen}
+					setIsModalOpen={setModalOpen}
+					handleImageGenerate={handleImageGenerate}
+					imageUrl={imageUrl}
+				/>
+			)}
 			<Row justify='center' gutter={[0, 24]} style={{ width: 'auto' }}>
 				<Col span={24}>
 					<Card className='card' title='Режиссерская панель'>
@@ -47,9 +111,7 @@ export default function GenerateFrame() {
 							direction='vertical'
 							current={current}
 							style={{ maxWidth: '500px' }}
-							onChange={(value: number) => {
-								setCurrent(value);
-							}}
+							onChange={(value: number) => setCurrent(value)}
 							items={[
 								{
 									title: 'Проверь свое подключение к Chat GPT',
@@ -63,18 +125,8 @@ export default function GenerateFrame() {
 												и скопируй API ключ.
 											</p>
 											<Space.Compact style={{ width: '100%' }}>
-												<Input
-													value={userGptKey}
-													onChange={(e) => {
-														handleSetUserGptKey(e.target.value);
-													}}
-												/>
-												<Button
-													type='primary'
-													onClick={() => {
-														handleCheckGptKey(userGptKey);
-													}}
-													disabled={userGptKey.length === 0}>
+												<Input value={userGptKey} onChange={(e) => setUserGptKey(e.target.value)} disabled={isGenerating} />
+												<Button type='primary' onClick={() => handleCheckGptKey(userGptKey)} disabled={userGptKey.length === 0}>
 													Проверить
 												</Button>
 												<div className='check-state'>{renderCheckStatus(checkStatus)}</div>
@@ -90,13 +142,16 @@ export default function GenerateFrame() {
 												showSearch
 												style={{ width: '100%' }}
 												optionFilterProp='label'
+												value={selectedLocationId}
+												onChange={handleSelectLocation}
+												disabled={isGenerating}
 												options={locations.map((loc: DefaultInfo) => ({
 													label: loc.title,
 													value: loc.id,
 												}))}
 											/>
 											<p>
-												Не нашел нужную сцену?&nbsp;
+												Не нашел нужную сцену?{' '}
 												<span onClick={() => navigate('/lore-frame/locations')} style={{ color: '#1677ff', cursor: 'pointer' }}>
 													Создай новую!
 												</span>
@@ -113,13 +168,15 @@ export default function GenerateFrame() {
 												mode='tags'
 												style={{ width: '100%' }}
 												tokenSeparators={[',']}
+												onChange={handleSelectActors}
+												disabled={isGenerating}
 												options={actors.map((actor: DefaultInfo) => ({
-													key: actor.id,
-													value: actor.title,
+													label: actor.title,
+													value: actor.id,
 												}))}
 											/>
 											<p>
-												Ты можешь добавить новых актеров&nbsp;
+												Ты можешь добавить новых актеров{' '}
 												<span onClick={() => navigate('/lore-frame/actors')} style={{ color: '#1677ff', cursor: 'pointer' }}>
 													здесь
 												</span>
@@ -133,16 +190,35 @@ export default function GenerateFrame() {
 				</Col>
 				<Col span={24}>
 					<Card className='card'>
-						<Space.Compact style={{ width: '100%' }}>
-							<Input
-								style={{ height: 48 }}
-								// onPressEnter={handleSubmit}
-								placeholder='Напиши короткое описание действий актеров, упоминая их по именам'
+						<Space direction='vertical' size='middle'>
+							<Alert
+								className='info-alert'
+								description='Важно! Мы генерируем изображение через DALL-E, а значит тут действуют все ограничения этой неросети. Поэтому насилие, обнаженку и другую жесть мы сгенерировать не можем. Пока что.'
+								closable
 							/>
-							<Button type='primary' style={{ height: 48 }}>
-								Создать
-							</Button>
-						</Space.Compact>
+							<Space.Compact style={{ width: '100%' }}>
+								<Input
+									style={{ height: 48 }}
+									placeholder='Напиши короткое описание действий актеров, упоминая их по именам'
+									value={text}
+									onChange={(e: React.ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
+									disabled={isGenerating}
+									suffix={
+										<>
+											<CloseOutlined
+												onClick={() => {
+													setText('');
+												}}
+											/>
+											<VoiceInput addVoiceText={addVoiceText} iconSize={24} />
+										</>
+									}
+								/>
+								<Button type='primary' style={{ height: 48 }} disabled={isGenerating} onClick={handleImageGenerate}>
+									{isGenerating ? 'Подождите...' : 'Создать'}
+								</Button>
+							</Space.Compact>
+						</Space>
 					</Card>
 				</Col>
 			</Row>
