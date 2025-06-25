@@ -83,22 +83,31 @@ export async function getMakeActorResponse(apiKey: string, base64Image: string) 
 
 export async function getImageGenerateResponse(apiKey: string, locationDescription: string, actors: DefaultInfo[], action: string) {
 	try {
+		const promptGenerate = `Write a prompt to generate an image of: ${action}. 
+		The action takes place in ${locationDescription}. Use actor descriptions: ${actors.map((a) => `${a.title} — ${a.description}`).join('; ')}.
+		The image should be stylized to resemble early Russian and Norwegian illustrated folk tales. Use thick, inky outlines and flat, muted watercolor washes with earthy tones.
+		The characters are stylized but anatomically sound, with strong silhouettes and expressive features.
+		The background should be minimal or consist of patterned elements such as stone, fabric, or carved walls to keep the attention on the characters.`;
+
+		const chatResponse = await axios.post(
+			OPENAI_CHAT_URL,
+			{
+				model: 'gpt-4o',
+				messages: [{ role: 'user', content: promptGenerate }],
+				temperature: 0.7,
+			},
+			{
+				headers: getHeaders(apiKey),
+			}
+		);
+
+		const imagePrompt = chatResponse.data.choices?.[0]?.message?.content?.trim();
+
 		const response = await axios.post(
 			OPENAI_IMAGE_URL,
 			{
 				model: 'dall-e-3',
-				prompt: `Make a storybook illustration in the style of early Russian folktales.
-					Scene: ${locationDescription}, where ${action}.
-					Characters: ${actors.map((a) => `${a.title} — ${a.description}`).join('; ')}.
-
-					Strictly follow the visual details of each character as described — including clothing, hairstyle, accessories, body shape, and posture. Do not invent or add elements that are not mentioned. Each character must be clearly distinguishable and accurately represented.
-
-					Use a limited, muted color palette, stylized but anatomically grounded figures, thick hand-inked outlines, and a clear, symmetrical composition. Keep the background simple and do not add unnecessary objects or scenery.
-
-					Include decorative framing in the style of Russian storybooks: borders with mythological patterns, knotwork, and birds like crows or owls, where appropriate.
-
-					Camera is positioned at a distance to show full-body characters and the environment with clarity. Printed book texture, flat watercolor-style fill, and visual harmony are important.
-					If you feel like the described situation is inappropriate in any way feel free to change it in the way that will work out. The main focus should be keeping characters as they are described to be recognizable and the situation portrayed to be at least resembling what is described, but moderate divergence is allowed.`,
+				prompt: imagePrompt,
 				n: 1,
 				size: '1024x1024',
 			},

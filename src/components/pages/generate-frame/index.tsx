@@ -20,7 +20,6 @@ export default function GenerateFrame() {
 	const actors = useRecoilValue(actorsState);
 
 	const [current, setCurrent] = useState(0);
-	const [text, setText] = useState<string>('');
 	const [userGptKey, setUserGptKey] = useState(gptKey);
 	const [checkStatus, setCheckStatus] = useState<string>('waiting');
 	const [isModalOpen, setModalOpen] = useState(false);
@@ -43,6 +42,7 @@ export default function GenerateFrame() {
 		selectedActors,
 		setSelectedActors,
 		action,
+		setAction,
 		isGenerating,
 		setIsGenerating,
 	} = useStepState();
@@ -90,7 +90,7 @@ export default function GenerateFrame() {
 	};
 
 	const addVoiceText = (transcript: string) => {
-		setText((prev) => prev + transcript);
+		setAction((prev) => prev + transcript);
 	};
 
 	return (
@@ -200,14 +200,14 @@ export default function GenerateFrame() {
 								<Input
 									style={{ height: 48 }}
 									placeholder='Напиши короткое описание действий актеров, упоминая их по именам'
-									value={text}
-									onChange={(e: React.ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
+									value={action}
+									onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAction(e.target.value)}
 									disabled={isGenerating}
 									suffix={
 										<>
 											<CloseOutlined
 												onClick={() => {
-													setText('');
+													setAction('');
 												}}
 											/>
 											<VoiceInput addVoiceText={addVoiceText} iconSize={24} />
