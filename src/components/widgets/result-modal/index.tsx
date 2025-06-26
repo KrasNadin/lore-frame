@@ -35,7 +35,7 @@ export default function ResultModal({ isModalOpen, setIsModalOpen, handleImageGe
 
 	const handleSaveImages = () => {
 		addActors(imageUrl);
-		openNotification('Теперь эта ты можешь найти эту картинку в сохраненных кадрах!');
+		openNotification('Теперь ты можешь найти эту картинку в сохраненных кадрах!');
 	};
 
 	const handleCopyResult = async () => {
@@ -66,7 +66,7 @@ export default function ResultModal({ isModalOpen, setIsModalOpen, handleImageGe
 							gap: 12,
 						}}>
 						<Button key='save' type='primary' style={{ width: 220 }} onClick={handleSaveImages}>
-							Круто! Сохрани в "Мои кадры"
+							Круто! Сохрани
 						</Button>
 						<Button key='copy' style={{ width: 220 }} onClick={handleCopyResult}>
 							Копировать ссылку
