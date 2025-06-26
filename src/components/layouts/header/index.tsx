@@ -1,5 +1,5 @@
 import { SettingOutlined, SignatureOutlined } from '@ant-design/icons';
-import { Menu, Flex, Typography, MenuProps } from 'antd';
+import { Menu, Flex, Typography, MenuProps, Space } from 'antd';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -46,31 +46,36 @@ export default function Header() {
 	};
 
 	return (
-		<Flex justify='space-between' align='center'>
-			<Flex justify='flex-start' gap={10} style={{ minWidth: '250px' }}>
-				<SignatureOutlined className='mainIcon' />
-				<Title level={4} style={{ margin: 0 }}>
-					LoreFrame - cоздай свой кадр!
-				</Title>
+		<Space direction='vertical' style={{ width: '100%' }}>
+			<Flex justify='space-between' align='center'>
+				<Flex justify='flex-start' gap={20} style={{ minWidth: '250px' }}>
+					<SignatureOutlined className='mainIcon' />
+					<Space.Compact direction='vertical' style={{ width: '100%' }}>
+						<Title level={4} style={{ margin: 0 }}>
+							LoreFrame – создай свой кадр!
+						</Title>
+						<Typography.Text style={{ fontSize: 13, color: '#999' }}>Свиток версии 1.0</Typography.Text>
+					</Space.Compact>
+				</Flex>
+				<Flex style={{ flex: 1, justifyContent: 'flex-end', overflow: 'hidden', minWidth: 0, gap: '10px' }}>
+					<Menu
+						mode='horizontal'
+						onClick={choosePage}
+						selectedKeys={[current]}
+						items={items}
+						style={{
+							justifyContent: 'flex-end',
+							background: 'transparent',
+							borderBottom: 'none',
+							fontSize: 16,
+							minWidth: 0,
+							flexWrap: 'nowrap',
+						}}
+						theme='light'
+					/>
+					<SettingOutlined className='mainIcon' onClick={() => navigate('/lore-frame/settings')} />
+				</Flex>
 			</Flex>
-			<Flex style={{ flex: 1, justifyContent: 'flex-end', overflow: 'hidden', minWidth: 0, gap: '10px' }}>
-				<Menu
-					mode='horizontal'
-					onClick={choosePage}
-					selectedKeys={[current]}
-					items={items}
-					style={{
-						justifyContent: 'flex-end',
-						background: 'transparent',
-						borderBottom: 'none',
-						fontSize: 16,
-						minWidth: 0,
-						flexWrap: 'nowrap',
-					}}
-					theme='light'
-				/>
-				<SettingOutlined className='mainIcon' onClick={() => navigate('/lore-frame/settings')} />
-			</Flex>
-		</Flex>
+		</Space>
 	);
 }

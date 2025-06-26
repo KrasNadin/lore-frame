@@ -89,7 +89,7 @@ export default function LocationsList({ locations }: Props) {
 					) : (
 						<Button onClick={() => handleEditToggle(loc.id)}>Изменить</Button>
 					)}
-					<Button danger onClick={() => handleDelete(loc.id)}>
+					<Button style={{ borderColor: '#a23b3b' }} onClick={() => handleDelete(loc.id)}>
 						Удалить
 					</Button>
 				</Space.Compact>

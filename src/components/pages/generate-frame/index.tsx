@@ -109,6 +109,7 @@ export default function GenerateFrame() {
 					<Card className='card' title='Режиссерская панель'>
 						<Steps
 							direction='vertical'
+							progressDot
 							current={current}
 							style={{ maxWidth: '500px' }}
 							onChange={(value: number) => setCurrent(value)}
@@ -119,7 +120,11 @@ export default function GenerateFrame() {
 										<>
 											<p>
 												Перейди в свой{' '}
-												<a href='https://chat.openai.com/' target='_blank' rel='noopener noreferrer'>
+												<a
+													href='https://chat.openai.com/'
+													target='_blank'
+													rel='noopener noreferrer'
+													style={{ color: '#c9a85c', cursor: 'pointer' }}>
 													аккаунт ChatGPT
 												</a>{' '}
 												и скопируй API ключ.
@@ -152,7 +157,7 @@ export default function GenerateFrame() {
 											/>
 											<p>
 												Не нашел нужную сцену?{' '}
-												<span onClick={() => navigate('/lore-frame/locations')} style={{ color: '#1677ff', cursor: 'pointer' }}>
+												<span onClick={() => navigate('/lore-frame/locations')} style={{ color: '#c9a85c', cursor: 'pointer' }}>
 													Создай новую!
 												</span>
 											</p>
@@ -177,7 +182,7 @@ export default function GenerateFrame() {
 											/>
 											<p>
 												Ты можешь добавить новых актеров{' '}
-												<span onClick={() => navigate('/lore-frame/actors')} style={{ color: '#1677ff', cursor: 'pointer' }}>
+												<span onClick={() => navigate('/lore-frame/actors')} style={{ color: '#c9a85c', cursor: 'pointer' }}>
 													здесь
 												</span>
 											</p>
@@ -193,7 +198,7 @@ export default function GenerateFrame() {
 						<Space direction='vertical' size='middle'>
 							<Alert
 								className='info-alert'
-								description='Важно! Мы генерируем изображение через DALL-E, а значит тут действуют все ограничения этой неросети. Поэтому насилие, обнаженку и другую жесть мы сгенерировать не можем. Пока что.'
+								description='Важно! Мы генерируем изображение через DALL-E, а значит тут действуют все ограничения этой нейросети. Поэтому насилие, обнаженку и другую жесть мы сгенерировать не можем. Пока что.'
 								closable
 							/>
 							<Space.Compact style={{ width: '100%' }}>

@@ -30,31 +30,24 @@ export default function Locations() {
 			)}
 			<Card className='card' style={{ width: '100%' }}>
 				<Space direction='vertical' size='middle' style={{ width: '100%' }}>
-					<Divider orientation='left' orientationMargin='0'>
-						Мастерская сцен
-					</Divider>
+					<Divider orientation='left'>Мастерская сцен</Divider>
 					<Alert
 						className='info-alert'
 						message={
 							<>
 								<Flex align='center' gap={10}>
 									<QuestionCircleOutlined className='cardIcon' />
-									Тут ты можешь найти и изменить все существующие сцены или создать новую.
+									Здесь ты можешь просматривать, редактировать и создавать сцены.
 								</Flex>
 							</>
 						}
-						description='Сцена - это место, где происходит дейсвтие.
-					Чтобы создать сцену, представь место, где может происходить действие в вашей игре.
-					Опиши его атмосферу, окружение и важные детали: это может быть мрачный лес,
-					заброшенная деревня, ледяная пещера или оживлённый портовый город. Добавь то,
-					что делает это место особенным — звуки, погоду или необычные элементы.
-					Чем подробнее описание, тем точнее GPT сможет визуализировать сцену.'
+						description='Сцена — это место действия: таверна, руины, лес или город.
+									Опиши его атмосферу, окружение и особые детали — это поможет магии визуализации.
+									Чем подробнее описание, тем точнее GPT сможет визуализировать сцену.'
 						closable
 					/>
 					<LocationsList locations={locations} />
-					<Divider orientation='left' orientationMargin='0'>
-						Создай новую сцену
-					</Divider>
+					<Divider orientation='left'>Создай новую сцену</Divider>
 					<Space.Compact style={{ width: '100%' }}>
 						<Input
 							style={{ height: 48 }}
