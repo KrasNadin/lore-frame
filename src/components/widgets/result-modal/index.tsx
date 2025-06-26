@@ -1,6 +1,7 @@
 import { Button, Modal, notification } from 'antd';
+import { useRecoilValue } from 'recoil';
 
-import { useImagesActions } from '@/store/atoms';
+import { imagesState, useImagesActions } from '@/store/atoms';
 
 type Props = {
 	isModalOpen: boolean;
@@ -22,6 +23,7 @@ const titleTemplates = [
 
 export default function ResultModal({ isModalOpen, setIsModalOpen, handleImageGenerate, imageUrl }: Props) {
 	const [api, contextHolder] = notification.useNotification();
+	const images = useRecoilValue(imagesState);
 	const { addActors } = useImagesActions();
 
 	const openNotification = (message: string) => {
@@ -35,7 +37,11 @@ export default function ResultModal({ isModalOpen, setIsModalOpen, handleImageGe
 
 	const handleSaveImages = () => {
 		addActors(imageUrl);
-		openNotification('Теперь ты можешь найти эту картинку в сохраненных кадрах!');
+		if (images.includes(imageUrl)) {
+			openNotification('Загляни в "Мои кадры", эта картинка уже есть там. Нечего просто так жать на кнопку!');
+		} else {
+			openNotification('Теперь ты можешь найти эту картинку в сохраненных кадрах!');
+		}
 	};
 
 	const handleCopyResult = async () => {
