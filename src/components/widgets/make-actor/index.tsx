@@ -99,7 +99,7 @@ export default function MakeActor() {
 				<TextArea
 					value={description}
 					onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
-					style={{ minHeight: '100px' }}
+					style={{ minHeight: '200px' }}
 				/>
 			</Modal>
 			<Card>

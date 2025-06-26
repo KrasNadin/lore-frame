@@ -20,7 +20,7 @@ export default function GenerateFrame() {
 	const actors = useRecoilValue(actorsState);
 
 	const [current, setCurrent] = useState(0);
-	const [userGptKey, setUserGptKey] = useState(gptKey);
+	const [userGptKey, setUserGptKey] = useState<string>(gptKey);
 	const [checkStatus, setCheckStatus] = useState<string>('waiting');
 	const [isModalOpen, setModalOpen] = useState(false);
 	const [api, contextHolder] = notification.useNotification();
@@ -79,14 +79,22 @@ export default function GenerateFrame() {
 	const handleImageGenerate = async () => {
 		setModalOpen(false);
 		setIsGenerating(true);
-		const generatedImage: string = await getImageGenerateResponse(gptKey, locationDescription, selectedActors, action);
-		console.log('Результат генерации:', generatedImage);
-		setImageUrl(generatedImage);
-		if (generatedImage.length === 0) {
-			openNotification('DALL·E отказалась рисовать это. Наверное, слишком дерзко. Перепиши мягче. ');
+		try {
+			const generatedImage: string = await getImageGenerateResponse(gptKey, locationDescription, selectedActors, action);
+			console.log('Результат генерации:', generatedImage);
+
+			if (!generatedImage || generatedImage.length === 0) {
+				openNotification('DALL·E отказалась рисовать это. Наверное, слишком дерзко. Перепиши мягче.');
+			} else {
+				setImageUrl(generatedImage);
+				setModalOpen(true);
+			}
+		} catch (error) {
+			openNotification('Произошла ошибка при генерации изображения. Попробуй ещё раз.');
+			console.error('Ошибка генерации:', error);
+		} finally {
+			setIsGenerating(false);
 		}
-		setModalOpen(true);
-		setIsGenerating(false);
 	};
 
 	const addVoiceText = (transcript: string) => {
@@ -194,16 +202,17 @@ export default function GenerateFrame() {
 					</Card>
 				</Col>
 				<Col span={24}>
-					<Card className='card'>
-						<Space direction='vertical' size='middle'>
+					<Card className='card' style={{ width: '100%' }}>
+						<Space direction='vertical' size='middle' style={{ width: '100%' }}>
 							<Alert
 								className='info-alert'
 								description='Важно! Мы генерируем изображение через DALL-E, а значит тут действуют все ограничения этой нейросети. Поэтому насилие, обнаженку и другую жесть мы сгенерировать не можем. Пока что.'
 								closable
+								afterClose={() => null}
 							/>
 							<Space.Compact style={{ width: '100%' }}>
 								<Input
-									style={{ height: 48 }}
+									style={{ height: 48, width: '100%' }}
 									placeholder='Напиши короткое описание действий актеров, упоминая их по именам'
 									value={action}
 									onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAction(e.target.value)}

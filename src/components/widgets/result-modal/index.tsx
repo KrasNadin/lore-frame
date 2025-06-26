@@ -1,5 +1,7 @@
 import { Button, Modal, notification } from 'antd';
 
+import { useImagesActions } from '@/store/atoms';
+
 type Props = {
 	isModalOpen: boolean;
 	setIsModalOpen: (arg: boolean) => void;
@@ -20,6 +22,7 @@ const titleTemplates = [
 
 export default function ResultModal({ isModalOpen, setIsModalOpen, handleImageGenerate, imageUrl }: Props) {
 	const [api, contextHolder] = notification.useNotification();
+	const { addActors } = useImagesActions();
 
 	const openNotification = (message: string) => {
 		api.info({
@@ -29,6 +32,11 @@ export default function ResultModal({ isModalOpen, setIsModalOpen, handleImageGe
 	};
 
 	const randomIndex = Math.floor(Math.random() * titleTemplates.length);
+
+	const handleSaveImages = () => {
+		addActors(imageUrl);
+		openNotification('Теперь эта ты можешь найти эту картинку в сохраненных кадрах!');
+	};
 
 	const handleCopyResult = async () => {
 		try {
@@ -57,7 +65,10 @@ export default function ResultModal({ isModalOpen, setIsModalOpen, handleImageGe
 							alignItems: 'center',
 							gap: 12,
 						}}>
-						<Button key='copy' type='primary' style={{ width: 220 }} onClick={handleCopyResult}>
+						<Button key='save' type='primary' style={{ width: 220 }} onClick={handleSaveImages}>
+							Круто! Сохрани в "Мои кадры"
+						</Button>
+						<Button key='copy' style={{ width: 220 }} onClick={handleCopyResult}>
 							Копировать ссылку
 						</Button>
 						<Button key='retry' type='default' danger style={{ width: 220 }} onClick={handleImageGenerate}>

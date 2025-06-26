@@ -64,7 +64,7 @@ export const actorsState = atom<DefaultInfo[]>({
 });
 
 export const useActorsActions = () => {
-	const setActors = useSetRecoilState(actorsState);
+	const [actors, setActors] = useRecoilState(actorsState);
 
 	const addActors = ({ id, title, description }: DefaultInfo) => {
 		setActors((prevActors) => [...prevActors, { id, title, description }]);
@@ -73,6 +73,43 @@ export const useActorsActions = () => {
 	const deleteActors = (id: string) => {
 		setActors((prevActors) => {
 			return prevActors.filter((actor) => actor.id !== id);
+		});
+	};
+
+	const updateActor = (id: string, description: string) => {
+		const updatedActor = actors.map((actor) => {
+			if (actor.id === id) {
+				return { ...actor, description };
+			}
+			return actor;
+		});
+		setActors(updatedActor);
+	};
+
+	return { addActors, deleteActors, updateActor };
+};
+
+// {Imaages}
+
+export const imagesState = atom<string[]>({
+	key: 'images',
+	default: [],
+	effects: [localStorageEffect('images')],
+});
+
+export const useImagesActions = () => {
+	const setImages = useSetRecoilState(imagesState);
+
+	const addActors = (imageUrl: string) => {
+		setImages((prevImages) => {
+			if (prevImages.includes(imageUrl)) return prevImages;
+			return [...prevImages, imageUrl];
+		});
+	};
+
+	const deleteActors = (imageUrl: string) => {
+		setImages((prevActors) => {
+			return prevActors.filter((image) => image !== imageUrl);
 		});
 	};
 
