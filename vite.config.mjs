@@ -15,6 +15,7 @@ export default ({ mode }) => {
 
     return defineConfig(
         {
+            base: '/lore-frame/',
             plugins: [
                 react(),
                 // eslint({

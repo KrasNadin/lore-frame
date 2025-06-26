@@ -51,7 +51,7 @@ export default function MakeActor() {
 	const uploadButton = (
 		<button style={{ border: 0, background: 'none', color: '#d9d9d9' }} type='button'>
 			{loading ? <LoadingOutlined /> : <PlusOutlined />}
-			<div style={{ marginTop: 8, color: '#d9d9d9' }}>{loading ? 'Загрузка' : 'Загрузить портрет'}</div>
+			<div style={{ marginTop: 8, color: '#d9d9d9', fontFamily: 'Luminari' }}>{loading ? 'Загрузка' : 'Загрузить портрет'}</div>
 		</button>
 	);
 

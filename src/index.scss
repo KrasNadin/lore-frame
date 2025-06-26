@@ -2,17 +2,67 @@ html, body {
     margin: 0;
     padding: 0;
     height: 100%;
+    font-size: 16px;
+    font-family: 'Luminari', serif;
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 13px;
+  }
+}
+
+:root {
+  --ant-primary-color: #bfa76f;
+  --ant-primary-color-hover: #8c6f3c;
+  --ant-primary-color-active: #8c6f3c;
+  --ant-primary-color-deprecated-bg: #bfa76f;
+  --ant-primary-color-deprecated-border: #8c6f3c;
+}
+
+:where(
+  .ant-typography,
+  .ant-btn,
+  .ant-menu,
+  .ant-select,
+  .ant-card,
+  .ant-collapse,
+  .ant-form,
+  .ant-modal,
+  .ant-tabs,
+  .ant-table,
+  .ant-divider
+) {
+  font-family: 'Luminari', serif !important;
+}
+
+:where(
+  .ant-input,
+  .ant-steps,
+  .ant-alert
+) {
+  font-family: 'Libre Baskerville', serif !important;
 }
 
 .card {
-  background-color: #222222;
+  background-color: #1c1a16;
   border-radius: 12px;
   color: #E9E9E9;
+  font-family: Luminari;
 }
 
 .mainIcon {
-    font-size: 25px;
+    font-size: 30px;
     color: black;
+    @media (max-width: 768px) {
+    font-size: 25px;
+  }
   }
 
 .cardIcon{
@@ -42,8 +92,9 @@ html, body {
 .info-alert {
   flex: 1;
   align-self: stretch;
+  
   background-color: #2B2B2B;
-  border: 1px solid #d9d9d9;
+  border: 1px solid #595959;
   color: #595959;
 }
 
