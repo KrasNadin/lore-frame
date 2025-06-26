@@ -3,6 +3,7 @@ import { Route } from 'react-router-dom';
 
 import Actors from '@/components/pages/actors';
 import GenerateFrame from '@/components/pages/generate-frame';
+import GeneratedImages from '@/components/pages/generated-image';
 import Locations from '@/components/pages/locations';
 import Settings from '@/components/pages/settings';
 
@@ -34,6 +35,11 @@ export const routes: RouteWithSubRoutesType[] = [
 		path: '/lore-frame/settings',
 		title: 'Настройки',
 		component: Settings,
+	},
+	{
+		path: '/lore-frame/generated-images',
+		title: 'Мои кадры',
+		component: GeneratedImages,
 	},
 ];
 

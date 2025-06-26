@@ -1,4 +1,4 @@
-import { SettingOutlined, SignatureOutlined } from '@ant-design/icons';
+import { CaretDownOutlined, SignatureOutlined } from '@ant-design/icons';
 import { Menu, Flex, Typography, MenuProps, Space } from 'antd';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -11,6 +11,8 @@ const menuMap: Record<string, string> = {
 	main: '/lore-frame/',
 	location: '/lore-frame/locations',
 	actors: '/lore-frame/actors',
+	settings: '/lore-frame/settings',
+	generated: '/lore-frame/generated-images',
 };
 
 const items: MenuItem[] = [
@@ -25,6 +27,14 @@ const items: MenuItem[] = [
 	{
 		label: 'Актеры',
 		key: 'actors',
+	},
+	{
+		label: 'Настройки',
+		key: 'settings',
+	},
+	{
+		label: 'Мои кадры',
+		key: 'generated',
 	},
 ];
 
@@ -60,6 +70,7 @@ export default function Header() {
 				<Flex style={{ flex: 1, justifyContent: 'flex-end', overflow: 'hidden', minWidth: 0, gap: '10px' }}>
 					<Menu
 						mode='horizontal'
+						overflowedIndicator={<CaretDownOutlined className='mainIcon' />}
 						onClick={choosePage}
 						selectedKeys={[current]}
 						items={items}
@@ -73,7 +84,6 @@ export default function Header() {
 						}}
 						theme='light'
 					/>
-					<SettingOutlined className='mainIcon' onClick={() => navigate('/lore-frame/settings')} />
 				</Flex>
 			</Flex>
 		</Space>

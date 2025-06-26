@@ -1,4 +1,4 @@
-import { Button, Input, Space, Collapse } from 'antd';
+import { Button, Input, Space, Collapse, Popconfirm } from 'antd';
 import type { CollapseProps } from 'antd';
 import { ChangeEvent, useEffect, useState } from 'react';
 
@@ -77,21 +77,28 @@ export default function LocationsList({ locations }: Props) {
 			label: loc.title,
 			children: (
 				<Space.Compact style={{ width: '100%' }}>
-					<Input
+					<Input.TextArea
 						value={state.value}
-						onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(loc.id, e.target.value)}
+						onChange={(e: ChangeEvent<HTMLTextAreaElement>) => handleChange(loc.id, e.target.value)}
 						disabled={!state.editing}
 					/>
-					{state.editing ? (
-						<Button type='primary' onClick={() => handleSave(loc.id)}>
-							Сохранить
-						</Button>
-					) : (
-						<Button onClick={() => handleEditToggle(loc.id)}>Изменить</Button>
-					)}
-					<Button style={{ borderColor: '#a23b3b' }} onClick={() => handleDelete(loc.id)}>
-						Удалить
-					</Button>
+					<Space.Compact direction='vertical'>
+						{state.editing ? (
+							<Button type='primary' onClick={() => handleSave(loc.id)}>
+								Сохранить
+							</Button>
+						) : (
+							<Button onClick={() => handleEditToggle(loc.id)}>Изменить</Button>
+						)}
+						<Popconfirm
+							title='Удаляем это?'
+							description='Это действие нельзя будет отменить. Никогда.'
+							onConfirm={() => handleDelete(loc.id)}
+							okText='Да'
+							cancelText='Отмена'>
+							<Button danger>Удалить</Button>
+						</Popconfirm>
+					</Space.Compact>
 				</Space.Compact>
 			),
 		};

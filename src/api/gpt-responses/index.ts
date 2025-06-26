@@ -6,6 +6,10 @@ const OPENAI_CHAT_URL = 'https://api.openai.com/v1/chat/completions';
 const OPENAI_IMAGE_URL = 'https://api.openai.com/v1/images/generations';
 const CONTENT_TYPE_JSON = 'application/json';
 
+const MODEL_GPT_3_5 = 'gpt-3.5-turbo';
+const MODEL_GPT_4O = 'gpt-4o';
+const MODEL_DALLE_3 = 'dall-e-3';
+
 function getHeaders(apiKey: string) {
 	return {
 		'Content-Type': CONTENT_TYPE_JSON,
@@ -23,7 +27,7 @@ export async function checkApiKey(apiKey: string): Promise<boolean> {
 		const response = await axios.post(
 			OPENAI_CHAT_URL,
 			{
-				model: 'gpt-3.5-turbo',
+				model: MODEL_GPT_3_5,
 				messages: [{ role: 'user', content: 'ping' }],
 			},
 			{
@@ -46,14 +50,14 @@ export async function getMakeActorResponse(apiKey: string, base64Image: string) 
 		const response = await axios.post(
 			OPENAI_CHAT_URL,
 			{
-				model: 'gpt-4o',
+				model: MODEL_GPT_4O,
 				messages: [
 					{
 						role: 'user',
 						content: [
 							{
 								type: 'text',
-								text: 'Опиши внешность персонажа для игры в ДНД. Укажи его расу, рост и телосложение, цвет кожи или шерсти, цвет и форму глаз, характерные черты лица (например, уши, рога, шрамы), одежду (цвет, стиль, детали), аксессуары и предметы в руках. Пиши кратко, в одном абзаце, строго описывая внешний вид, без эмоций, историй и оценок.',
+								text: 'Это вымышленный иллюстрированный персонаж из фэнтезийного проекта. Опишите внешний вид персонажа в художественных терминах: укажи его расу, пол, рост и телосложение, цвет кожи или шерсти, цвет и форму глаз, характерные черты лица (например, уши, рога, шрамы), одежду (цвет, стиль, детали), аксессуары и предметы в руках. Пиши кратко, в одном абзаце, строго описывая внешний вид, без эмоций, историй и оценок. Не идентифицируйте и не делайте предположений о реальных людях — это исключительно для целей визуального дизайна.',
 							},
 							{
 								type: 'image_url',
@@ -73,15 +77,15 @@ export async function getMakeActorResponse(apiKey: string, base64Image: string) 
 		return response.data.choices[0].message.content;
 	} catch (error: any) {
 		if (axios.isAxiosError(error)) {
-			console.error('Ошибка при запросе к OpenAI:', error.response?.data || error.message);
+			console.error('Ошибка при создании актера:', error.response?.data || error.message);
 		} else {
-			console.error('Неизвестная ошибка:', error);
+			console.error('Неизвестная ошибка при создании актера:', error);
 		}
 		return null;
 	}
 }
 
-export async function getImageGenerateResponse(apiKey: string, locationDescription: string, actors: DefaultInfo[], action: string) {
+const getPromptGenerateResponse = async (apiKey: string, locationDescription: string, actors: DefaultInfo[], action: string) => {
 	try {
 		const promptGenerate = `Write a prompt to generate an image of: ${action}. 
 		The action takes place in ${locationDescription}. Use actor descriptions: ${actors.map((a) => `${a.title} — ${a.description}`).join('; ')}.
@@ -92,7 +96,7 @@ export async function getImageGenerateResponse(apiKey: string, locationDescripti
 		const chatResponse = await axios.post(
 			OPENAI_CHAT_URL,
 			{
-				model: 'gpt-4o',
+				model: MODEL_GPT_4O,
 				messages: [{ role: 'user', content: promptGenerate }],
 				temperature: 0.7,
 			},
@@ -100,13 +104,30 @@ export async function getImageGenerateResponse(apiKey: string, locationDescripti
 				headers: getHeaders(apiKey),
 			}
 		);
+		const { choices } = chatResponse.data;
+		return choices?.[0]?.message?.content?.trim();
+	} catch (error) {
+		if (axios.isAxiosError(error)) {
+			console.error('Ошибка при генерации промпта:', error.response?.data || error.message);
+		} else {
+			console.error('Неизвестная ошибка при генерации промпта:', error);
+		}
+		return null;
+	}
+};
 
-		const imagePrompt = chatResponse.data.choices?.[0]?.message?.content?.trim();
+export async function getImageGenerateResponse(apiKey: string, locationDescription: string, actors: DefaultInfo[], action: string) {
+	try {
+		const imagePrompt = await getPromptGenerateResponse(apiKey, locationDescription, actors, action);
+		if (!imagePrompt) {
+			console.error('Не удалось сгенерировать промпт для изображения.');
+			return null;
+		}
 
 		const response = await axios.post(
 			OPENAI_IMAGE_URL,
 			{
-				model: 'dall-e-3',
+				model: MODEL_DALLE_3,
 				prompt: imagePrompt,
 				n: 1,
 				size: '1024x1024',
@@ -119,9 +140,9 @@ export async function getImageGenerateResponse(apiKey: string, locationDescripti
 		return result.data?.[0]?.url;
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
-			console.error('Ошибка при запросе к OpenAI:', error.response?.data || error.message);
+			console.error('Ошибка при генерации изображения:', error.response?.data || error.message);
 		} else {
-			console.error('Неизвестная ошибка:', error);
+			console.error('Неизвестная ошибка при генерации изображения:', error);
 		}
 		return null;
 	}
